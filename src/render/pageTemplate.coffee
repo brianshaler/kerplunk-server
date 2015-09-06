@@ -1,7 +1,7 @@
 _ = require 'lodash'
 
 module.exports = (body, layout, content, options, scripts = [], preloadComponents = []) ->
-  clumperEnabled = true
+  clumperEnabled = process.env.NODE_ENV != 'dev'
 
   clumperScript = if clumperEnabled
     "<script src='/clumper.js?include=true&files=#{scripts.join ','}'></script><script>var requirejs = require;</script>"
