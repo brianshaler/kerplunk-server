@@ -138,7 +138,7 @@ module.exports = React.createFactory React.createClass
 
     window.stuff = @
     document.title = @props.title ? defaultTitle
-    history.replaceState obj, '', window.location.pathname
+    history.replaceState obj, '', window.location
 
     unless @props.isUser == false
       console.log 'isUser', @props.isUser
