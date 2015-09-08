@@ -172,6 +172,10 @@ module.exports = React.createFactory React.createClass
     @props.request.get url, null, (err, newGlobals) =>
       return console.error err if err
       console.log 'new globals', newGlobals
+      rjs1 = @state.globals.public?.requirejs
+      rjs2 = newGlobals.public?.requirejs
+      if rjs1 and rjs2 and !(_.isEqual rjs1, rjs2)
+        requirejs.config rjs2
       @setState
         globals: newGlobals
 
