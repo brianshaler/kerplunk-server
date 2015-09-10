@@ -1,6 +1,6 @@
 # kerplunk-server
 
-[Kerplunk](https://github.com/brianshaler/kerplunk) plugin. 
+[Kerplunk](https://github.com/brianshaler/kerplunk) plugin. Core web server that exposes routes declared by plugins, bootstraps the web client app, authenticates, and provides generalized websockets support.
 
 [![Build Status](https://travis-ci.org/brianshaler/kerplunk-server.svg)](https://travis-ci.org/brianshaler/kerplunk-server)
 [![npm version](https://img.shields.io/npm/v/kerplunk-server.svg)](https://www.npmjs.com/package/kerplunk-server)
