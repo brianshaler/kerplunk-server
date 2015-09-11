@@ -13,7 +13,7 @@ module.exports = (System) ->
             if req.session.sessionToken == correctToken
               req.wasUser = req.isUser = true
               s.lastActivity = new Date()
-              System.updateSettings s, (err) ->
+              System.updateSettings {$set: {lastActivity: new Date()}}, (err) ->
                 next()
               return
         next()
