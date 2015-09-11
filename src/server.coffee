@@ -80,7 +80,6 @@ module.exports = (System) ->
 
       dbPlugin = System.getPlugin 'kerplunk-database'
 
-      console.log 'Setting up websockets'
       websockets = SetupWebsockets System, server, httpsServer
       websockets.primus[0].save "#{System.baseDir}/public/js/primus.js"
 
