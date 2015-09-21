@@ -44,7 +44,7 @@ module.exports = React.createFactory React.createClass
 
   navigate: (url) ->
     url = chopUrl url
-    console.log 'navigate', url
+    # console.log 'navigate', url
     #component = @getRouteComponent url, @props.routes
     #params = @getRouteParams url, @props.routes
     match = _.find @state.routes, (route) ->
@@ -52,7 +52,7 @@ module.exports = React.createFactory React.createClass
 
     return false unless match?.component?.length > 0
 
-    console.log 'no fetch required; switching to the component', match.component
+    # console.log 'no fetch required; switching to the component', match.component
 
     changedState =
       currentUrl: url
@@ -68,9 +68,9 @@ module.exports = React.createFactory React.createClass
     @setState changedState
     true
 
-  pushState: (e, force = false) ->
+  pushState: (e, force = false, data) ->
     url = chopUrl e.currentTarget.href
-    console.log 'pushState', url
+    # console.log 'pushState', url
     try
       navigable = @navigate url
     catch err
@@ -78,33 +78,41 @@ module.exports = React.createFactory React.createClass
       return
     if navigable
       e.preventDefault()
-    else #if force == true
-      # console.log 'fetch data to populate component', e
-      e.preventDefault()
-      @setState
-        contentComponent: @props.globals.public.loadingComponent
-      return false unless url
-      jsonUrl = "#{url}.json"
-      @props.request.get jsonUrl, null, (err, data) =>
-        if err or !data?.component or !data?.state
-          return window.location = url
-        historyState = _.extend {}, data.state,
-          currentUrl: url
-          contentComponent: data.component
-        if data.title
-          document.title = data.title
-          historyState.title = data.title
-        history.pushState historyState, url, url
-        if data.state.data?[0]?._id
-          for item in data.state.data
-            @props.Repository.update item._id, item
-        newState = _.extend {}, data.state,
-          contentComponent: data.component
-          currentUrl: url
-          title: data.state.title ? defaultTitle
-        document.title = newState.title
-        # console.log 'data received, show component', newState
-        @setState newState
+      return
+    #if force == true
+    # console.log 'fetch data to populate component', e
+    e.preventDefault()
+    @setState
+      contentComponent: @props.globals.public.loadingComponent
+    return false unless url
+
+    handleData = (data) =>
+      historyState = _.extend {}, data.state,
+        currentUrl: url
+        contentComponent: data.component
+      if data.title
+        document.title = data.title
+        historyState.title = data.title
+      history.pushState historyState, url, url
+      if data.state.data?[0]?._id
+        for item in data.state.data
+          @props.Repository.update item._id, item
+      newState = _.extend {}, data.state,
+        contentComponent: data.component
+        currentUrl: url
+        title: data.state.title ? defaultTitle
+      document.title = newState.title
+      # console.log 'data received, show component', newState
+      @setState newState
+
+    if data?
+      handleData data
+      return
+    jsonUrl = "#{url}.json"
+    @props.request.get jsonUrl, null, (err, data) =>
+      if err or !data?.component or !data?.state
+        return window.location = url
+      handleData data
 
   sockets: {}
   getSocket: (socketName, obj = {}) ->
@@ -141,16 +149,16 @@ module.exports = React.createFactory React.createClass
     history.replaceState obj, '', window.location
 
     unless @props.isUser == false
-      console.log 'isUser', @props.isUser
+      # console.log 'isUser', @props.isUser
       @socket = @getSocket 'kerplunk'
       @socket.on 'data', (data) =>
         return unless @isMounted()
         if data.state?
-          console.log 'set state', data.state
+          # console.log 'set state', data.state
           @setState data.state
 
     window.addEventListener 'popstate', (e) =>
-      console.log 'popstate', history.state
+      # console.log 'popstate', history.state
       newState = history.state
       unless newState and Object.keys(newState ? {}).length > 0
         newState = obj
@@ -164,6 +172,7 @@ module.exports = React.createFactory React.createClass
 
   componentDidUpdate: (prevProps, prevState) ->
     if prevState.currentUrl != @state.currentUrl
+      return
       console.log 'was', prevState.currentUrl
       console.log 'now', @state.currentUrl
 
@@ -171,7 +180,7 @@ module.exports = React.createFactory React.createClass
     url = '/admin/globals.json'
     @props.request.get url, null, (err, newGlobals) =>
       return console.error err if err
-      console.log 'new globals', newGlobals
+      # console.log 'new globals', newGlobals
       rjs1 = @state.globals.public?.requirejs
       rjs2 = newGlobals.public?.requirejs
       if rjs1 and rjs2 and !(_.isEqual rjs1, rjs2)
@@ -210,7 +219,7 @@ module.exports = React.createFactory React.createClass
     obj.globals = @state.globals
     Component = obj.getComponent @state.layoutComponent
     if !Component or !(typeof Component is 'function')
-      console.log 'component not found', @state.layoutComponent
+      # console.log 'component not found', @state.layoutComponent
       return DOM.div null, 'wat'
     DOM.div null,
       Component obj
