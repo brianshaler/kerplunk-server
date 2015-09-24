@@ -1,6 +1,7 @@
 module.exports = (redisClient) ->
   (req, res, next) ->
     return next() if req.wasUser or req.isUser or req.method?.toUpperCase?() != 'GET'
+    return next() if req.session.sessionToken or req.session.noCache
     res.__send = res.send
     res.send = (obj) ->
       if /no-cache/i.test res._headers?.pragma or /no-cache/i.test res._headers['cache-control']
