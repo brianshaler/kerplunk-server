@@ -10,6 +10,9 @@ module.exports = (System) ->
   (req, res, next) ->
     res.__render = res.render
     res.render = (componentPath, options = {}) ->
+      defaults =
+        isUser: req.isUser
+      options = _.extend defaults, req.session, options
       unless options.isUser?
         options.isUser = req.isUser
       if /:/.test componentPath
