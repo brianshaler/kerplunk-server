@@ -12,6 +12,3 @@ module.exports = React.createFactory React.createClass
         JSON.stringify (@props.error ? {}), null, 2
       DOM.pre null,
         JSON.stringify (@props.stack ? {}), null, 2
-      if @props.sessionStuff
-        DOM.pre null,
-          JSON.stringify @props.sessionStuff, null, 2
