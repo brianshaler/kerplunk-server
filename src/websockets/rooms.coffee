@@ -3,10 +3,10 @@ _ = require 'lodash'
 module.exports = (System, primus) ->
   getID = (spark) ->
     id = (spark.request.sessionID ? 'Anon').substring 0, 4
-    if spark.request.friendDomain
-      id = spark.request.friendDomain
-    if spark.request.session?.friendDomain
-      id = spark.request.session.friendDomain
+    if spark.request.userName
+      id = spark.request.userName
+    if spark.request.session?.userName
+      id = spark.request.session.userName
     if spark.request.isUser
       me = System.getMe()
       displayNames = []
