@@ -27,6 +27,31 @@ PlaceholderComponent = React.createFactory React.createClass
   render: ->
     DOM.span()
 
+getLinkTags = (arr, key = '') ->
+  if typeof arr is 'string'
+    arr = [arr]
+  _.map arr, (substyle, index) ->
+
+Styles = React.createFactory React.createClass
+  customProperty: 'stuff'
+
+  render: ->
+    names = ['*'].concat @props.getStyles()
+    paths = _.uniq _.compact _.flatten _.map names, (name) =>
+      return null unless @props.css[name]
+      isObject = typeof @props.css[name] is 'object'
+      isArray = @props.css[name] instanceof Array
+      if isObject and !isArray
+        _.values @props.css[name]
+      else
+        @props.css[name]
+
+    DOM.div null, _.map paths, (stylePath) ->
+      DOM.link
+        key: stylePath
+        rel: 'stylesheet'
+        href: "/plugins/#{stylePath}"
+
 module.exports = React.createFactory React.createClass
   getInitialState: ->
     #refreshState: => @refreshState()
@@ -213,13 +238,23 @@ module.exports = React.createFactory React.createClass
     #@props.components[c]
 
   render: ->
+    reportedComponents = {}
     obj = _.extend {}, @props, @state,
       refreshState: => @refreshState()
-      getComponent: (c) => @getComponent(c)
+      getComponent: (c) =>
+        reportedComponents[c] = true
+        @getComponent(c)
     obj.globals = @state.globals
     Component = obj.getComponent @state.layoutComponent
     if !Component or !(typeof Component is 'function')
       # console.log 'component not found', @state.layoutComponent
-      return DOM.div null, 'wat'
+      return DOM.div null, 'wat.. @app'
     DOM.div null,
       Component obj
+      DOM.div
+        style:
+          marginLeft: '240px'
+      ,
+        Styles
+          css: obj.globals.public.css ? {}
+          getStyles: -> Object.keys reportedComponents
