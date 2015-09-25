@@ -91,6 +91,14 @@ module.exports = (System) ->
         else
           'public'
         next()
+
+      # app.use (req, res, next) ->
+      #   return next() unless /\.css$/.test req.originalUrl
+      #   console.log 'slowing down css'
+      #   setTimeout ->
+      #     next()
+      #   , 2000 + Math.random() * 2000
+
       app.use cookieParser()
       app.use dbPlugin.getSessionMiddleware()
       app.use methodOverride()
