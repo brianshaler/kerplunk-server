@@ -35,9 +35,8 @@ getLinkTags = (arr, key = '') ->
 Styles = React.createFactory React.createClass
   customProperty: 'stuff'
 
-  render: ->
-    names = ['*'].concat @props.getStyles()
-    paths = _.uniq _.compact _.flatten _.map names, (name) =>
+  uniquePaths: (names) ->
+    _.uniq _.compact _.flatten _.map names, (name) =>
       return null unless @props.css[name]
       isObject = typeof @props.css[name] is 'object'
       isArray = @props.css[name] instanceof Array
@@ -46,11 +45,20 @@ Styles = React.createFactory React.createClass
       else
         @props.css[name]
 
-    DOM.div null, _.map paths, (stylePath) ->
+  render: ->
+    {current, all} = @props.getStyles()
+    currentNames = ['*'].concat current
+    allNames = ['*'].concat all
+    currentPaths = @uniquePaths currentNames
+    allPaths = @uniquePaths allNames
+
+    DOM.div null, _.map allPaths, (stylePath) ->
+      enabled = -1 <= currentPaths.indexOf stylePath
       DOM.link
         key: stylePath
         rel: 'stylesheet'
         href: "/plugins/#{stylePath}"
+        disabled: (true if !enabled)
 
 module.exports = React.createFactory React.createClass
   getInitialState: ->
@@ -238,11 +246,13 @@ module.exports = React.createFactory React.createClass
     #@props.components[c]
 
   render: ->
+    @reportedComponents = {} unless @reportedComponents
     reportedComponents = {}
     obj = _.extend {}, @props, @state,
       refreshState: => @refreshState()
       getComponent: (c) =>
         reportedComponents[c] = true
+        @reportedComponents[c] = true
         @getComponent(c)
     obj.globals = @state.globals
     Component = obj.getComponent @state.layoutComponent
@@ -257,4 +267,6 @@ module.exports = React.createFactory React.createClass
       ,
         Styles
           css: obj.globals.public.css ? {}
-          getStyles: -> Object.keys reportedComponents
+          getStyles: =>
+            current: Object.keys reportedComponents
+            all: Object.keys @reportedComponents
