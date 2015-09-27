@@ -53,7 +53,7 @@ Styles = React.createFactory React.createClass
     allPaths = @uniquePaths allNames
 
     DOM.div null, _.map allPaths, (stylePath) ->
-      enabled = -1 <= currentPaths.indexOf stylePath
+      enabled = 0 <= currentPaths.indexOf stylePath
       DOM.link
         key: stylePath
         rel: 'stylesheet'
