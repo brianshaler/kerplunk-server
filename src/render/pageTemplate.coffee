@@ -27,6 +27,7 @@ module.exports = (body, layout, content, options, scripts = [], preloadComponent
     <meta charset='UTF-8'>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     <script src='/js/primus.js'></script>
+    #{scriptTags}
     #{clumperScript}
     <script>
     var layoutComponentPath = '#{layout.pluginName}:#{layout.componentPath}';
@@ -41,7 +42,6 @@ module.exports = (body, layout, content, options, scripts = [], preloadComponent
   </head>
   <body>
   #{dom}
-  #{scriptTags}
   <script>KerplunkInit();</script>
   </body>
   </html>"
