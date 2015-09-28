@@ -12,15 +12,13 @@ module.exports = (body, layout, content, options, scripts = [], preloadComponent
   base = "<base href='/'>"
   dom = "<div id='content'>#{body}</div>"
 
-  scriptTags = if clumperEnabled
-    ''
-  else
+  unless clumperEnabled
     scripts.unshift '/js/require.js'
-    _ scripts
-      .map (script) ->
-        "<script src='#{script}'></script>"
-      .value()
-      .join '\n    '
+  scriptTags = _ scripts
+    .map (script) ->
+      "<script src='#{script}'></script>"
+    .value()
+    .join '\n    '
 
   "<!DOCTYPE html>
   <html>
