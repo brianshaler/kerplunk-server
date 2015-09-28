@@ -2,7 +2,7 @@
   "name": "kerplunk-server",
   "displayName": "Server",
   "description": "Core web server that exposes routes declared by plugins, bootstraps the web client app, authenticates, and provides generalized websockets support.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "kerplunk": {
     "dependencies": [
       "kerplunk-database"
