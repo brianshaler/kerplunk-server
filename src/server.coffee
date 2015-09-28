@@ -94,10 +94,16 @@ module.exports = (System) ->
 
       # app.use (req, res, next) ->
       #   return next() unless /\.css$/.test req.originalUrl
-      #   console.log 'slowing down css'
+      #   console.log 'slowing down css', req.originalUrl
       #   setTimeout ->
       #     next()
       #   , 2000 + Math.random() * 2000
+
+      # app.use (req, res, next) ->
+      #   console.log 'slowing down everything', req.originalUrl
+      #   setTimeout ->
+      #     next()
+      #   , 1000 + Math.random() * 4000
 
       app.use cookieParser()
       app.use dbPlugin.getSessionMiddleware()
