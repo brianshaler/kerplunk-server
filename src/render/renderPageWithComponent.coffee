@@ -1,10 +1,23 @@
 _ = require 'lodash'
 path = require 'path'
 url = require 'url'
+request = require 'request'
 React = require 'react'
 ReactiveData = require 'reactive-data'
 
 pageTemplate = require './pageTemplate'
+
+resolveComponentPath = (componentPath) ->
+  return unless componentPath?.indexOf
+  index = componentPath.indexOf ':'
+  '/plugins' +
+  "/#{componentPath.substr 0, index}" +
+  '/components' +
+  "/#{componentPath.substr index + 1}" +
+  if /\.js/.test componentPath
+    ''
+  else
+    '.js'
 
 module.exports = (System) ->
   (req, res, next) ->
@@ -77,5 +90,44 @@ module.exports = (System) ->
       if LayoutComponent?.scripts?.length > 0
         for script in LayoutComponent.scripts
           scripts.push script
-      res.send pageTemplate renderedPage, layout, content, options, scripts, preloadComponents
+
+      clumperEnabled = process.env.NODE_ENV != 'dev'
+      injectedScripts = '<!-- no scripts to preload -->'
+      finish = ->
+        res.send pageTemplate renderedPage, layout, content, options, scripts, preloadComponents, injectedScripts
+      if clumperEnabled
+        preloadPaths = _ preloadComponents
+        .map resolveComponentPath
+        .compact()
+        .value()
+
+        clumperUrl = "#{req.protocol}://#{req.host}/clumper.json?files=#{preloadPaths.join ','}"
+        reqOptions =
+          rejectUnauthorized: false
+          json: true
+        request clumperUrl, reqOptions, (err, response, deps) ->
+          console.log 'cookies', req.cookies
+          console.log 'deps.length', deps?.files?.length
+          console.log 'fileid+version', _.map (deps?.files ? []), (file) ->
+            file.fileId + file.version
+          unless deps?.files?.length > 0
+            console.log 'uh oh', deps
+          return finish() unless deps?.files?.length > 0
+          files = _.filter deps.files, (file) ->
+            -1 == String(req.cookies?.clumper ? '').indexOf file.fileId + file.version
+          console.log 'injecting', files.length, _.pluck files, 'name'
+          injectedScripts = """
+          (function () {
+            var data = #{JSON.stringify files};
+            if (clumper) {
+              for (var k in data) {
+                clumper.process(data[k].name, data[k].error, data[k].data, data[k].fileId, data[k].version, (new Date(data[k].dateModified)).getTime());
+                clumper.eval(data[k].name);
+              }
+            }
+          })()
+          """
+          finish()
+      else
+        finish()
     next()

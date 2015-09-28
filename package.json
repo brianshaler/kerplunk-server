@@ -40,6 +40,7 @@
     "react": "0.13.3",
     "reactive-data": "0.0.4",
     "redis": "^0.12.1",
+    "request": "^2.64.0",
     "route-matcher": "^0.1.0",
     "when": "^3.7.3",
     "ws": "^0.7.1"
