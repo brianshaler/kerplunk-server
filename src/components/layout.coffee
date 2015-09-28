@@ -1,9 +1,6 @@
 _ = require 'lodash'
 React = require 'react'
 
-routeMatcher = require 'route-matcher'
-routeMatcher = routeMatcher.routeMatcher if routeMatcher.routeMatcher
-
 {DOM} = React
 
 module.exports = React.createFactory React.createClass
@@ -22,10 +19,6 @@ module.exports = React.createFactory React.createClass
 
   render: ->
     url = @props.currentUrl #window.location.pathname
-    stylesheets = []
-    for path, routes of @props.globals.public.styles
-      if routeMatcher url, routes
-        stylesheets.push path
     wrapperClasses = [
       'wrapper'
       'relative'
@@ -45,9 +38,3 @@ module.exports = React.createFactory React.createClass
             height: '100%'
         ,
           @props.getComponent(@props.contentComponent) _.extend {key: @props.currentUrl}, @props
-      _.map stylesheets, (stylesheet) ->
-        DOM.link
-          rel: 'stylesheet'
-          key: stylesheet
-          href: "/plugins/#{stylesheet}"
-        , ''
