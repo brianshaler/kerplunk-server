@@ -10,7 +10,8 @@ module.exports = (redisClient) ->
       # If payload isn't a string yet, let express pass it back through
       if typeof obj == 'string'
         # console.log 'cache it!', req.url, req.method
-        redisClient.set req.url, obj, (err, reply) ->
+        cacheKey = req.url + String(req.cookies?.clumper ? '')
+        redisClient.set cacheKey, obj, (err, reply) ->
           throw err if err
           res.__send obj
         redisClient.expire req.url, 60 * 5
