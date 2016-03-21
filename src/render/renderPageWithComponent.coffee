@@ -106,16 +106,13 @@ module.exports = (System) ->
           rejectUnauthorized: false
           json: true
         request clumperUrl, reqOptions, (err, response, deps) ->
-          console.log 'cookies', req.cookies
-          console.log 'deps.length', deps?.files?.length
-          console.log 'fileid+version', _.map (deps?.files ? []), (file) ->
             file.fileId + file.version
           unless deps?.files?.length > 0
-            console.log 'uh oh', deps
+            console.log 'uh oh, no deps from clumper?', deps
           return finish() unless deps?.files?.length > 0
           files = _.filter deps.files, (file) ->
             -1 == String(req.cookies?.clumper ? '').indexOf file.fileId + file.version
-          console.log 'injecting', files.length, _.pluck files, 'name'
+          console.log 'injecting', files.length, _.map files, 'name'
           injectedScripts = """
           (function () {
             var data = #{JSON.stringify files};

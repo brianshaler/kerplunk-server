@@ -50,10 +50,10 @@ module.exports = (System, primus) ->
 
   primus.on 'disconnection', (spark) ->
     return unless spark._rooms?.length > 0
-    rooms = _.pluck spark._rooms, 'name'
+    rooms = _.map spark._rooms, 'name'
     for room in rooms
       announceToRoom room, "#{getID spark} left the room #{room}"
-    # console.log 'disconnection', _.pluck spark._rooms, 'name'
+    # console.log 'disconnection', _.map spark._rooms, 'name'
 
   primus.on 'connection', (spark) ->
     return spark.write lol: 'nope' unless spark.request.isUser or /^public-/.test spark.query?.name
