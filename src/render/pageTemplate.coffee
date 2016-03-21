@@ -35,7 +35,6 @@ module.exports = (body, layout, content, options, scripts = [], preloadComponent
     var initialProps = #{JSON.stringify options};
     var preloadComponents = #{JSON.stringify preloadComponents};
     </script>
-    <script>console.log('page', new Date());</script>
     <script>#{injectedScripts}</script>
     <script src='/plugins/kerplunk-server/js/main.js'></script>
     #{base}
