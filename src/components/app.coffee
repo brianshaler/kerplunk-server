@@ -25,7 +25,7 @@ chopUrl = (url) ->
 
 PlaceholderComponent = React.createFactory React.createClass
   render: ->
-    DOM.span()
+    DOM.span null, 'loading'
 
 getLinkTags = (arr, key = '') ->
   if typeof arr is 'string'
@@ -261,12 +261,8 @@ module.exports = React.createFactory React.createClass
       return DOM.div null, 'wat.. @app'
     DOM.div null,
       Component obj
-      DOM.div
-        style:
-          marginLeft: '240px'
-      ,
-        Styles
-          css: obj.globals.public.css ? {}
-          getStyles: =>
-            current: Object.keys reportedComponents
-            all: Object.keys @reportedComponents
+      Styles
+        css: obj.globals.public.css ? {}
+        getStyles: =>
+          current: Object.keys reportedComponents
+          all: Object.keys @reportedComponents
